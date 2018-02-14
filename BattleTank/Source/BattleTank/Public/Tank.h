@@ -4,7 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+
+
 #include "Tank.generated.h"
+
+class UTankAimingComponent;
+class UTankBarrel;
 
 UCLASS()
 class BATTLETANK_API ATank : public APawn
@@ -15,18 +20,27 @@ public:
 	// Sets default values for this pawn's properties
 	ATank();
 
-	// Aims the Tank's turret&barrel towards a specific world-location.
-	void aimAt(FVector worldLocation);
-
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Delegate aiming to this tanks aiming component.
+	void aimAt(FVector worldLocation);
+
+	UFUNCTION(BlueprintCallable, Category = Setup)
+	// Sets the barrel reference for the aiming component
+	void setBarrelReference(UTankBarrel* barrelToSet);
+
+protected:
+	UTankAimingComponent* tankAimingComponent = nullptr;
+
+private:	
+	UPROPERTY(EditAnywhere, Category = Firing)
+	float launchSpeed = 100000.0f;		//TODO: find sensible default
 	
 };
