@@ -15,6 +15,9 @@ public:
 	// Sets default values for this pawn's properties
 	ATank();
 
+	// Aims the Tank's turret&barrel towards a specific world-location.
+	void aimAt(FVector worldLocation);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -25,7 +28,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	
 	
 };
