@@ -6,11 +6,11 @@
 #include "Components/ActorComponent.h"
 
 
-
-
 #include "TankAimingComponent.generated.h"
 
-class UTankBarrel;	//Forward Declaration
+///Forward Declarations
+class UTankBarrel;	
+class UTankTurret;
 
 //Provides the interface from the Tank to it's Barrel
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -26,9 +26,11 @@ public:
 	void aimAt(FVector worldLocation, float launchSpeed);
 
 	void setBarrel(UTankBarrel* barrelToSet);
+	void setTurret(UTankTurret* turretToSet);
 
 private:
 	UTankBarrel* barrel = nullptr;
+	UTankTurret* turret = nullptr;
 	
 	void moveBarrelTowards(FVector aimDirection);
 };

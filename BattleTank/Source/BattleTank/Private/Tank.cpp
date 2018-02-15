@@ -3,6 +3,7 @@
 #include "Public/Tank.h"
 #include "Public/TankAimingComponent.h"
 #include "Public/TankBarrel.h"
+#include "Public/TankTurret.h"
 
 // Sets default values
 ATank::ATank() {
@@ -29,6 +30,10 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 
 void ATank::aimAt(FVector worldLocation) {
 	tankAimingComponent->aimAt(worldLocation, launchSpeed);
+}
+
+void ATank::setTurretReference(UTankTurret* turretToSet) {
+	tankAimingComponent->setTurret(turretToSet);
 }
 
 void ATank::setBarrelReference(UTankBarrel* barrelToSet) {

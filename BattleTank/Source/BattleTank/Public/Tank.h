@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 
-
 #include "Tank.generated.h"
 
 class UTankAimingComponent;
 class UTankBarrel;
+class UTankTurret;
 
 UCLASS()
 class BATTLETANK_API ATank : public APawn
@@ -30,6 +30,10 @@ public:
 	void aimAt(FVector worldLocation);
 
 	UFUNCTION(BlueprintCallable, Category = Setup)
+	// Sets the turret reference for the aiming component
+	void setTurretReference(UTankTurret* turretToSet);
+
+	UFUNCTION(BlueprintCallable, Category = Setup)
 	// Sets the barrel reference for the aiming component
 	void setBarrelReference(UTankBarrel* barrelToSet);
 
@@ -38,6 +42,6 @@ protected:
 
 private:	
 	UPROPERTY(EditAnywhere, Category = Firing)
-	float launchSpeed = 100000.0f;		//TODO: find sensible default
+	float launchSpeed = 4000;
 	
 };
