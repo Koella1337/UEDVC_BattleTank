@@ -2,6 +2,8 @@
 
 #include "Public/TankAimingComponent.h"
 #include "Public/TankBarrel.h"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 #define OUT 
 
@@ -10,7 +12,7 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
 }
@@ -21,20 +23,27 @@ void UTankAimingComponent::aimAt(FVector worldLocation, float launchSpeed) {
 	//unitvector that tells us in which direction the projectile needs to be launched
 	FVector launchDirection;
 
-	///try to calculate an arc for launching the projectile from the barrel's end to worldLocation
-	if (UGameplayStatics::SuggestProjectileVelocity(
+	bool bFoundAimingSolution = UGameplayStatics::SuggestProjectileVelocity(
 		this,
 		OUT launchDirection,
 		barrel->GetSocketLocation(FName("LaunchPoint")),
 		worldLocation,
 		launchSpeed,
-		ESuggestProjVelocityTraceOption::DoNotTrace
-		)
-	) {
+		false,
+		0.0f,
+		0.0f,
+		ESuggestProjVelocityTraceOption::DoNotTrace		//Parameter must be present to prevent bug
+	);
+
+	auto time = GetWorld()->GetTimeSeconds();
+	///try to calculate an arc for launching the projectile from the barrel's end to worldLocation
+	if (bFoundAimingSolution) {
 		///found an arc -> launch the missile
 		launchDirection = launchDirection.GetSafeNormal();	//convert provided velocity vector into unit vector
+		UE_LOG(LogTemp, Warning, TEXT("%f: Aim solution found."), time);
 		moveBarrelTowards(launchDirection);
-	}
+	} else
+		UE_LOG(LogTemp, Warning, TEXT("%f: DID NOT find aim solution."), time);
 	///if no solution found: do nothing
 }
 
@@ -48,5 +57,5 @@ void UTankAimingComponent::moveBarrelTowards(FVector aimDirection) {
 	FRotator directionAsRotator = aimDirection.Rotation();
 	FRotator deltaRotator = directionAsRotator - barrelRotator;
 
-	barrel->Elevate(5.0f); //TODO: remove magic number
+	barrel->Elevate(deltaRotator.Pitch); //TODO: remove magic number
 }

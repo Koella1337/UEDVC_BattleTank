@@ -4,8 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Components/StaticMeshComponent.h"
+
 
 
 
@@ -13,6 +12,7 @@
 
 class UTankBarrel;	//Forward Declaration
 
+//Provides the interface from the Tank to it's Barrel
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANK_API UTankAimingComponent : public UActorComponent
 {
