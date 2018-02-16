@@ -9,7 +9,7 @@
 void ATankPlayerController::BeginPlay() {
 	Super::BeginPlay();
 
-	ATank* controlledTank = getControlledTank();
+	controlledTank = Cast<ATank>(GetPawn());
 	if (!controlledTank) {
 		UE_LOG(LogTemp, Warning, TEXT("PlayerController not possessing a Tank."));
 	}
@@ -22,15 +22,15 @@ void ATankPlayerController::Tick(float DeltaSeconds) {
 }
 
 ATank* ATankPlayerController::getControlledTank() const {
-	return Cast<ATank>(GetPawn());
+	return controlledTank;
 }
 
 void ATankPlayerController::aimTowardsCrosshair() {
-	if (!getControlledTank()) return;
+	if (!controlledTank) return;
 
 	FVector hitLocation;
 	if (getSightRayHitLocation(OUT hitLocation)) {		//side-effect: actually does the raytrace into hitLocation
-		getControlledTank()->aimAt(hitLocation);
+		controlledTank->aimAt(hitLocation);
 	}
 }
 
@@ -48,7 +48,7 @@ bool ATankPlayerController::getSightRayHitLocation(FVector& outHitLocation) cons
 				startLocation,
 				endLocation,
 				ECC_Visibility,
-				FCollisionQueryParams(NAME_None, false, getControlledTank())
+				FCollisionQueryParams(NAME_None, false, controlledTank)
 			)
 		) {
 			///if linetrace hits anything: return the impact location and true

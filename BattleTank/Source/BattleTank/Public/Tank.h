@@ -26,6 +26,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	///Tank Interface
+
 	// Delegate aiming to this tanks aiming component.
 	void aimAt(FVector worldLocation);
 
@@ -44,12 +46,20 @@ public:
 protected:
 	UTankAimingComponent* tankAimingComponent = nullptr;
 
-private:	
-	UPROPERTY(EditAnywhere, Category = Firing)
-	float launchSpeed = 4000;
-	
+private:
+	///properties
 	UPROPERTY(EditAnywhere, Category = Setup)
 	TSubclassOf<AProjectile> projectile;
+
+	UPROPERTY(EditAnywhere, Category = Firing)
+	float launchSpeed = 4000;
+
+	UPROPERTY(EditAnywhere, Category = Firing)
+	float reloadTimeInSeconds = 3;
+
+	///variables
+	//time since last projectile was launched. initialized to -reloadTime at BeginPlay
+	float lastFireTime;		
 
 	// Local barrel reference for launching projectiles
 	UTankBarrel* barrel = nullptr;

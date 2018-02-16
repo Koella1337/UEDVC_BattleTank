@@ -19,6 +19,8 @@ ATank::ATank() {
 void ATank::BeginPlay() {
 	Super::BeginPlay();
 
+	lastFireTime = -reloadTimeInSeconds;		//make tanks able to fire immediately after spawning
+
 	if (!tankAimingComponent) {
 		UE_LOG(LogTemp, Error, TEXT("Tank [%s] is missing an Aiming Component!"), *GetName());
 	}
@@ -44,14 +46,17 @@ void ATank::setBarrelReference(UTankBarrel* barrelToSet) {
 }
 
 void ATank::fire() {
-	if (!barrel) return;
+	bool isReloaded = (GetWorld()->GetTimeSeconds() - lastFireTime) > reloadTimeInSeconds;
 
-	///spawn projectile at barrel's socket lockation
-	auto spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(
-		projectile,
-		barrel->GetSocketLocation(FName("LaunchPoint")),
-		barrel->GetSocketRotation(FName("LaunchPoint"))
-	);
+	if (barrel && isReloaded) {
+		///spawn projectile at barrel's socket lockation
+		auto spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(
+			projectile,
+			barrel->GetSocketLocation(FName("LaunchPoint")),
+			barrel->GetSocketRotation(FName("LaunchPoint"))
+			);
 
-	spawnedProjectile->launchProjectile(launchSpeed);
+		spawnedProjectile->launchProjectile(launchSpeed);
+		lastFireTime = GetWorld()->GetTimeSeconds();
+	}
 }

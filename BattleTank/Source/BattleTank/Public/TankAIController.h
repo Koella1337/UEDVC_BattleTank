@@ -15,7 +15,6 @@ class BATTLETANK_API ATankAIController : public AAIController
 	GENERATED_BODY()
 	
 public:
-	ATank* getPlayerTank() const;
 	ATank* getControlledTank() const;
 	
 protected:
@@ -23,5 +22,6 @@ protected:
 	virtual void Tick(float deltaSeconds) override;
 
 private:
-	
+	ATank* controlledTank = nullptr;
+	ATank* playerTank = nullptr;
 };

@@ -46,4 +46,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float lineTraceRange = 1000000.0f; ///10km
+
+	///Variables
+	ATank* controlledTank = nullptr;
 };
