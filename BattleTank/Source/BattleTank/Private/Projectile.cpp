@@ -2,7 +2,6 @@
 
 #include "Public/Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Engine/World.h"		//TODO: Remove when logging is removed
 
 // Sets default values
 AProjectile::AProjectile()
@@ -31,7 +30,4 @@ void AProjectile::Tick(float DeltaTime)
 void AProjectile::launchProjectile(float speed) {
 	movementComponent->SetVelocityInLocalSpace(FVector::ForwardVector * speed);
 	movementComponent->Activate();
-
-	auto time = GetWorld()->GetTimeSeconds();
-	UE_LOG(LogTemp, Warning, TEXT("%f: Projectile fired at speed: %f"), time, speed);
 }
