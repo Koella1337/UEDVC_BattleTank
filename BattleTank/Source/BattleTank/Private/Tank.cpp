@@ -4,6 +4,7 @@
 #include "Public/TankAimingComponent.h"
 #include "Public/TankBarrel.h"
 #include "Public/TankTurret.h"
+#include "Engine/World.h"				//TODO: remove when logging removed
 
 // Sets default values
 ATank::ATank() {
@@ -38,4 +39,9 @@ void ATank::setTurretReference(UTankTurret* turretToSet) {
 
 void ATank::setBarrelReference(UTankBarrel* barrelToSet) {
 	tankAimingComponent->setBarrel(barrelToSet);
+}
+
+void ATank::fire() {
+	auto time = GetWorld()->GetTimeSeconds();
+	UE_LOG(LogTemp, Warning, TEXT("%f: Fired a tank shell."), time);
 }

@@ -37,6 +37,10 @@ public:
 	// Sets the barrel reference for the aiming component
 	void setBarrelReference(UTankBarrel* barrelToSet);
 
+	UFUNCTION(BlueprintCallable, Category = Firing)
+	// Launches a projectile
+	void fire();
+
 protected:
 	UTankAimingComponent* tankAimingComponent = nullptr;
 

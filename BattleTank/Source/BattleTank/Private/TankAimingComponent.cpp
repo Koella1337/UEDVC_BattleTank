@@ -3,7 +3,6 @@
 #include "Public/TankAimingComponent.h"
 #include "Public/TankBarrel.h"
 #include "Public/TankTurret.h"
-#include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
 #define OUT 
@@ -36,15 +35,12 @@ void UTankAimingComponent::aimAt(FVector worldLocation, float launchSpeed) {
 		ESuggestProjVelocityTraceOption::DoNotTrace		//Parameter must be present to prevent bug
 	);
 
-	auto time = GetWorld()->GetTimeSeconds();
 	///try to calculate an arc for launching the projectile from the barrel's end to worldLocation
 	if (bFoundAimingSolution) {
 		///found an arc -> launch the missile
 		launchDirection = launchDirection.GetSafeNormal();	//convert provided velocity vector into unit vector
-		UE_LOG(LogTemp, Warning, TEXT("%f: Aim solution found."), time);
 		moveBarrelTowards(launchDirection);
-	} else
-		UE_LOG(LogTemp, Warning, TEXT("%f: DID NOT find aim solution."), time);
+	}
 	///if no solution found: do nothing
 }
 
