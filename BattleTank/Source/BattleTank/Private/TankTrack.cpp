@@ -4,13 +4,13 @@
 #include "Engine/World.h"		//TODO: remove when logging removed
 
 void UTankTrack::setThrottle(float throttle) {
-	//TODO: clamp actual throttle value so player cant speed tank up
+	float clampedThrottle = FMath::Clamp<float>(throttle, -0.7f, 1.0f);
 	
 	auto time = GetWorld()->GetTimeSeconds();
 	UE_LOG(LogTemp, Warning, TEXT("%f: %s's throttle: %f"), time, *GetName(), throttle);
-
-	auto forceApplied = GetForwardVector() * throttle * trackMaxDrivingForce;
-	auto forceLocation = GetComponentLocation();
+	
+	FVector forceApplied = GetForwardVector() * clampedThrottle * trackMaxDrivingForce;
+	FVector forceLocation = GetComponentLocation();
 	auto tankBody = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
 
 	tankBody->AddForceAtLocation(forceApplied, forceLocation);
