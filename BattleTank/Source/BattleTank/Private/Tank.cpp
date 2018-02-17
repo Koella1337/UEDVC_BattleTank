@@ -2,6 +2,7 @@
 
 #include "Public/Tank.h"
 #include "Public/TankAimingComponent.h"
+#include "Public/TankMovementComponent.h"
 #include "Public/TankBarrel.h"
 #include "Public/TankTurret.h"
 #include "Public/Projectile.h"
@@ -12,6 +13,7 @@ ATank::ATank() {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	///add components to tank
 	tankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("AimingComponent"));
 }
 
@@ -56,7 +58,11 @@ void ATank::fire() {
 			barrel->GetSocketRotation(FName("LaunchPoint"))
 			);
 
-		spawnedProjectile->launchProjectile(launchSpeed);
+		if (spawnedProjectile)
+			spawnedProjectile->launchProjectile(launchSpeed);
+		else
+			UE_LOG(LogTemp, Error, TEXT("Projectile could not be spawned! Is it set in the Tank Blueprint?"));
+
 		lastFireTime = GetWorld()->GetTimeSeconds();
 	}
 }
