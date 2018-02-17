@@ -23,3 +23,15 @@ void UTankMovementComponent::intendTurnRight(float axisValue) {
 	rightTrack->setThrottle(-axisValue);
 	//TODO: prevent double speed via double control use
 }
+
+void UTankMovementComponent::RequestDirectMove(const FVector & MoveVelocity, bool bForceMaxSpeed) {
+	///replacing functionality --> no Super!
+
+	FVector aiMoveIntention = MoveVelocity.GetSafeNormal();
+	float aiForwardAxis = FVector::DotProduct(GetOwner()->GetActorForwardVector(), aiMoveIntention);
+	float aiRightAxis = FVector::DotProduct(GetOwner()->GetActorRightVector(), aiMoveIntention);
+	//Alternative: float aiRightAxis = FVector::CrossProduct(GetOwner()->GetActorForwardVector(), aiMoveIntention).Z;
+
+	intendMoveForward(aiForwardAxis);
+	intendTurnRight(aiRightAxis);
+}

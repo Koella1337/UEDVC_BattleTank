@@ -3,7 +3,7 @@
 #include "Public/TankTrack.h"
 
 void UTankTrack::setThrottle(float throttle) {
-	float clampedThrottle = FMath::Clamp<float>(throttle, -0.7f, 1.0f);
+	float clampedThrottle = FMath::Clamp<float>(throttle, minThrottle, maxThrottle);
 	
 	FVector forceApplied = GetForwardVector() * clampedThrottle * trackMaxDrivingForce;
 	FVector forceLocation = GetComponentLocation();

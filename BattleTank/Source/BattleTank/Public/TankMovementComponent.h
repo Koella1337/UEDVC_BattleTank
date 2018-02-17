@@ -21,14 +21,17 @@ class BATTLETANK_API UTankMovementComponent : public UNavMovementComponent
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = Setup)
+	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void initialise(UTankTrack* leftTrack, UTankTrack* rightTrack);
 
-	UFUNCTION(BlueprintCallable, Category = Input)
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void intendMoveForward(float axisValue);
 	
-	UFUNCTION(BlueprintCallable, Category = Input)
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void intendTurnRight(float axisValue);
+
+	//Executes the AI-Pathfinding that was calculated inside AIController's MoveToActor()
+	virtual void RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed) override;
 	
 private:
 	UTankTrack* leftTrack = nullptr;

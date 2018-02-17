@@ -22,11 +22,11 @@ void ATankAIController::Tick(float deltaSeconds) {
 	Super::Tick(deltaSeconds);
 
 	if (controlledTank && playerTank) {
+		///move towards the player
+		MoveToActor(playerTank, acceptanceRadius);
+
 		///aim towards the player
 		controlledTank->aimAt(playerTank->GetActorLocation());
-
-		///TODO: move towards the player
-
 
 		///TODO: shoot if ready
 		controlledTank->fire();

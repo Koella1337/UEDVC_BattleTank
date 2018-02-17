@@ -24,4 +24,8 @@ protected:
 private:
 	ATank* controlledTank = nullptr;
 	ATank* playerTank = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	// The radius in cm where the AI considers itself close enough to the player
+	float acceptanceRadius = 3000;
 };
