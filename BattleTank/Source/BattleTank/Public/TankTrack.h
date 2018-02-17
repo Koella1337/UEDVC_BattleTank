@@ -19,4 +19,10 @@ public:
 	// Sets a throttle between -1 and +1
 	void setThrottle(float throttle);
 	
+private:
+	///Assume 40 tonne Tank, 10m/s² == 1000cm/s² acceleration
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	// Max force per track in (UE-)Newtons (kgcm/s²)
+	float trackMaxDrivingForce = 40000000;	
+
 };
