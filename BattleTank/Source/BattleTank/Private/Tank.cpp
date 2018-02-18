@@ -4,7 +4,6 @@
 #include "Public/TankAimingComponent.h"
 #include "Public/TankMovementComponent.h"
 #include "Public/TankBarrel.h"
-#include "Public/TankTurret.h"
 #include "Public/Projectile.h"
 #include "Engine/World.h"
 
@@ -13,8 +12,6 @@ ATank::ATank() {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	///add components to tank
-	tankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("AimingComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -23,28 +20,23 @@ void ATank::BeginPlay() {
 
 	lastFireTime = -reloadTimeInSeconds;		//make tanks able to fire immediately after spawning
 
-	if (!tankAimingComponent) {
-		UE_LOG(LogTemp, Error, TEXT("Tank [%s] is missing an Aiming Component!"), *GetName());
-	}
+	///Set up locally-stored components
+	barrel = FindComponentByClass<UTankBarrel>();
+	aimingComp = FindComponentByClass<UTankAimingComponent>();
+
+	if (!barrel)
+		UE_LOG(LogTemp, Error, TEXT("Tank [%s] can't find its Barrel!"), *GetName());
+	if (!aimingComp) 
+		UE_LOG(LogTemp, Error, TEXT("Tank [%s] can't find its Aiming-Component!"), *GetName());
 }
 
-// Called to bind functionality to input
-void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+UTankAimingComponent* ATank::getAimingComponent() const {
+	return aimingComp;
 }
 
-void ATank::aimAt(FVector worldLocation) {
-	tankAimingComponent->aimAt(worldLocation, launchSpeed);
-}
-
-void ATank::setTurretReference(UTankTurret* turretToSet) {
-	tankAimingComponent->setTurret(turretToSet);
-}
-
-void ATank::setBarrelReference(UTankBarrel* barrelToSet) {
-	tankAimingComponent->setBarrel(barrelToSet);
-	barrel = barrelToSet;
+void ATank::aimAt(FVector worldLocation) const {
+	if (aimingComp)
+		aimingComp->aimAt(worldLocation, launchSpeed);
 }
 
 void ATank::fire() {

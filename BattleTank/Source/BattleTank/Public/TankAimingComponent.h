@@ -8,9 +8,20 @@
 
 #include "TankAimingComponent.generated.h"
 
+UENUM()
+enum class EFiringStatus : uint8 {
+	Reloading,
+	Aiming,
+	LockedOn
+};
+
 ///Forward Declarations
-class UTankBarrel;	
+class UTankBarrel;
 class UTankTurret;
+
+
+
+
 
 //Provides the interface from the Tank to it's Barrel
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -22,11 +33,15 @@ public:
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	// Aims the Tank's turret&barrel towards a specific world-location.
 	void aimAt(FVector worldLocation, float launchSpeed);
 
-	void setBarrel(UTankBarrel* barrelToSet);
-	void setTurret(UTankTurret* turretToSet);
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	void initialise(UTankTurret* turretToSet, UTankBarrel* barrel);
+
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	EFiringStatus firingStatus = EFiringStatus::Aiming;
 
 private:
 	UTankBarrel* barrel = nullptr;

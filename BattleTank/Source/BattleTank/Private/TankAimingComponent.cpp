@@ -18,7 +18,10 @@ UTankAimingComponent::UTankAimingComponent()
 }
 
 void UTankAimingComponent::aimAt(FVector worldLocation, float launchSpeed) {
-	if (!barrel) return;
+	if (!barrel || !turret) {
+		UE_LOG(LogTemp, Error, TEXT("Missing Barrel or Turret on %s's AimingComponent!"), *GetOwner()->GetName());
+		return;
+	}
 
 	//unitvector that tells us in which direction the projectile needs to be launched
 	FVector launchDirection;
@@ -44,15 +47,12 @@ void UTankAimingComponent::aimAt(FVector worldLocation, float launchSpeed) {
 	///if no solution found: do nothing
 }
 
-void UTankAimingComponent::setBarrel(UTankBarrel* barrelToSet) {
-	barrel = barrelToSet;
+void UTankAimingComponent::initialise(UTankTurret* turret, UTankBarrel* barrel) {
+	this->turret = turret;
+	this->barrel = barrel;
 }
 
-void UTankAimingComponent::setTurret(UTankTurret* turretToSet) {
-	turret = turretToSet;
-}
-
-
+//Expects barrel and turret to be valid since this is a private function.
 void UTankAimingComponent::moveBarrelTowards(FVector aimDirection) {
 	FRotator barrelRotator = barrel->GetComponentRotation();
 	FRotator directionAsRotator = aimDirection.Rotation();

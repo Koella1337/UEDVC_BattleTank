@@ -6,9 +6,9 @@
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
 
+
 class UTankAimingComponent;
-class UTankMovementComponent;
-class UTankBarrel; class UTankTurret;
+class UTankBarrel;
 class AProjectile;
 
 UCLASS()
@@ -23,38 +23,28 @@ public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	///Tank interface
+	UTankAimingComponent* getAimingComponent() const;
 
-	///Tank Interface
+	//Delegates aiming to the Aiming-Component
+	void aimAt(FVector worldLocation) const;
 
-	// Delegate aiming to this tanks aiming component.
-	void aimAt(FVector worldLocation);
-
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	// Sets the turret reference for the aiming component
-	void setTurretReference(UTankTurret* turretToSet);
-
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	// Sets barrel reference locally and for the aiming component
-	void setBarrelReference(UTankBarrel* barrelToSet);
-
-	UFUNCTION(BlueprintCallable, Category = Firing)
+	//TODO: move entire "Firing" category to AimingComponent
+	UFUNCTION(BlueprintCallable, Category = "Firing")
 	// Launches a projectile
 	void fire();
 
-protected:
-	UTankAimingComponent* tankAimingComponent = nullptr;
-
 private:
 	///properties
-	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	TSubclassOf<AProjectile> projectile;
 
-	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	//TODO: move entire "Firing" category to AimingComponent
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 	float launchSpeed = 4000;
 
-	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	//TODO: move entire "Firing" category to AimingComponent
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 	float reloadTimeInSeconds = 3;
 
 	///variables
@@ -63,4 +53,6 @@ private:
 
 	// Local barrel reference for launching projectiles
 	UTankBarrel* barrel = nullptr;
+
+	UTankAimingComponent* aimingComp = nullptr;
 };
