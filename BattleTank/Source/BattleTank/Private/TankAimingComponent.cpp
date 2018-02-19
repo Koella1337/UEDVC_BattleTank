@@ -14,9 +14,19 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
+}
+
+void UTankAimingComponent::BeginPlay() {
+	Super::BeginPlay();
 
 	lastFireTime = -reloadTimeInSeconds;		//make tanks able to fire immediately after spawning
+}
+
+void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction) {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	firingState = determineFiringStatus();
 }
 
 void UTankAimingComponent::initialise(UTankTurret* turret, UTankBarrel* barrel) {
@@ -44,9 +54,13 @@ void UTankAimingComponent::aimAt(FVector worldLocation) {
 
 	///try to calculate an arc for launching the projectile from the barrel's end to worldLocation
 	if (bFoundAimingSolution) {
-		///found an arc -> launch the missile
+		///found an arc -> move the barrel
 		launchDirection = launchDirection.GetSafeNormal();	//convert provided velocity vector into unit vector
-		moveBarrelTowards(launchDirection);
+
+		isBarrelMoving = !launchDirection.Equals(barrel->GetForwardVector(), 0.015f);
+		if (isBarrelMoving) {
+			moveBarrelTowards(launchDirection);
+		}
 	}
 	///if no solution found: do nothing
 }
@@ -62,9 +76,10 @@ void UTankAimingComponent::moveBarrelTowards(FVector aimDirection) {
 }
 
 void UTankAimingComponent::fire() {
-	bool isReloaded = (GetWorld()->GetTimeSeconds() - lastFireTime) > reloadTimeInSeconds;
+	if (firingState != EFiringStatus::Reloading) {
+		if (!ensure(barrel)) return;
+		if (!ensure(projectileBlueprint)) return;
 
-	if (ensure(barrel && projectileBlueprint) && isReloaded) {
 		///spawn projectile at barrel's socket lockation
 		auto spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(
 			projectileBlueprint,
@@ -76,5 +91,14 @@ void UTankAimingComponent::fire() {
 			spawnedProjectile->launchProjectile(launchSpeed);
 			lastFireTime = GetWorld()->GetTimeSeconds();
 		}
+	}
+}
+
+EFiringStatus UTankAimingComponent::determineFiringStatus() const {
+	if ((GetWorld()->GetTimeSeconds() - lastFireTime) < reloadTimeInSeconds) {
+		return EFiringStatus::Reloading;
+	}
+	else {
+		return isBarrelMoving ? EFiringStatus::Aiming : EFiringStatus::LockedOn;
 	}
 }

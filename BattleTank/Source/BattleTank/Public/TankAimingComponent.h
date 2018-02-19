@@ -33,6 +33,11 @@ public:
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 
+	virtual void BeginPlay() override;
+
+	// Executed every frame
+	virtual void TickComponent(float, ELevelTick, FActorComponentTickFunction*) override;
+
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	// Aims the Tank's turret&barrel towards a specific world-location.
 	void aimAt(FVector worldLocation);
@@ -45,15 +50,15 @@ public:
 	void fire();
 
 	UPROPERTY(BlueprintReadOnly, Category = "State")
-	EFiringStatus firingStatus = EFiringStatus::Aiming;
+	EFiringStatus firingState = EFiringStatus::Aiming;
 
 private:
 	///Variables
 	UTankBarrel* barrel = nullptr;
 	UTankTurret* turret = nullptr;
 
-	//time since last projectile was launched. initialized to -reloadTime at Construct
-	float lastFireTime;
+	float lastFireTime;				//time since last projectile was launched. initialized to -reloadTime at BeginPlay
+	bool isBarrelMoving = false;	//set by aimAt-function, used for determineFireStatus()
 
 	///Properties
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
@@ -67,4 +72,5 @@ private:
 	
 	///Private functions
 	void moveBarrelTowards(FVector aimDirection);
+	EFiringStatus determineFiringStatus() const;
 };

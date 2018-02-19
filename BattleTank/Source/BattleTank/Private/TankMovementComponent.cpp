@@ -13,15 +13,13 @@ void UTankMovementComponent::intendMoveForward(float axisValue) {
 
 	leftTrack->setThrottle(axisValue);
 	rightTrack->setThrottle(axisValue);
-	//TODO: prevent double speed via double control use
 }
 
 void UTankMovementComponent::intendTurnRight(float axisValue) {
 	if (!ensure(leftTrack && rightTrack)) return;
 
-	leftTrack->setThrottle(axisValue);
-	rightTrack->setThrottle(-axisValue);
-	//TODO: prevent double speed via double control use
+	leftTrack->setThrottle(axisValue, true);
+	rightTrack->setThrottle(-axisValue, true);
 }
 
 void UTankMovementComponent::RequestDirectMove(const FVector & MoveVelocity, bool bForceMaxSpeed) {

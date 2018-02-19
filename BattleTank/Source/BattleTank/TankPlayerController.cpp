@@ -17,7 +17,9 @@ void ATankPlayerController::BeginPlay() {
 void ATankPlayerController::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 
-	aimTowardsCrosshair();
+	if (GetPawn()) { //only execute when Controller is possessing a Pawn
+		aimTowardsCrosshair();
+	}
 }
 
 void ATankPlayerController::aimTowardsCrosshair() {
