@@ -9,7 +9,7 @@ void UTankMovementComponent::initialise(UTankTrack* leftTrack, UTankTrack* right
 }
 
 void UTankMovementComponent::intendMoveForward(float axisValue) {
-	if (!leftTrack || !rightTrack) return;
+	if (!ensure(leftTrack && rightTrack)) return;
 
 	leftTrack->setThrottle(axisValue);
 	rightTrack->setThrottle(axisValue);
@@ -17,7 +17,7 @@ void UTankMovementComponent::intendMoveForward(float axisValue) {
 }
 
 void UTankMovementComponent::intendTurnRight(float axisValue) {
-	if (!leftTrack || !rightTrack) return;
+	if (!ensure(leftTrack && rightTrack)) return;
 
 	leftTrack->setThrottle(axisValue);
 	rightTrack->setThrottle(-axisValue);
@@ -30,7 +30,7 @@ void UTankMovementComponent::RequestDirectMove(const FVector & MoveVelocity, boo
 	FVector aiMoveIntention = MoveVelocity.GetSafeNormal();
 	float aiForwardAxis = FVector::DotProduct(GetOwner()->GetActorForwardVector(), aiMoveIntention);
 	float aiRightAxis = FVector::DotProduct(GetOwner()->GetActorRightVector(), aiMoveIntention);
-	//Alternative: float aiRightAxis = FVector::CrossProduct(GetOwner()->GetActorForwardVector(), aiMoveIntention).Z;
+	//Alternative: float aiRightAxisCross = FVector::CrossProduct(GetOwner()->GetActorForwardVector(), aiMoveIntention).Z;
 
 	intendMoveForward(aiForwardAxis);
 	intendTurnRight(aiRightAxis);

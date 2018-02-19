@@ -7,23 +7,20 @@
 
 #include "TankAIController.generated.h"
 
-class ATank;
+class UTankAimingComponent;
 
 UCLASS()
 class BATTLETANK_API ATankAIController : public AAIController
 {
 	GENERATED_BODY()
 	
-public:
-	ATank* getControlledTank() const;
-	
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float deltaSeconds) override;
 
 private:
-	ATank* controlledTank = nullptr;
-	ATank* playerTank = nullptr;
+	UTankAimingComponent* aimingComp = nullptr;
+	APawn* playerPawn = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	// The radius in cm where the AI considers itself close enough to the player

@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankPlayerController.h"
-#include "Public/Tank.h"
 #include "Public/TankAimingComponent.h"
 #include "Engine/World.h"
 
@@ -10,17 +9,9 @@
 void ATankPlayerController::BeginPlay() {
 	Super::BeginPlay();
 
-	controlledTank = Cast<ATank>(GetPawn());
-	if (!controlledTank) {
-		UE_LOG(LogTemp, Warning, TEXT("PlayerController not possessing a Tank."));
-		return;
-	}
-
-	auto aimingComponent = controlledTank->FindComponentByClass<UTankAimingComponent>();
-	if (aimingComponent)
-		foundAimingComponent(aimingComponent);
-	else
-		UE_LOG(LogTemp, Warning, TEXT("PlayerController can't find TankAimingComponent."));
+	aimingComp = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	if (ensure(aimingComp))
+		foundAimingComponent(aimingComp);
 }
 
 void ATankPlayerController::Tick(float DeltaSeconds) {
@@ -29,16 +20,12 @@ void ATankPlayerController::Tick(float DeltaSeconds) {
 	aimTowardsCrosshair();
 }
 
-ATank* ATankPlayerController::getControlledTank() const {
-	return controlledTank ? controlledTank : Cast<ATank>(GetPawn());
-}
-
 void ATankPlayerController::aimTowardsCrosshair() {
-	if (!controlledTank) return;
+	if (!ensure(aimingComp)) return;
 
 	FVector hitLocation;
 	if (getSightRayHitLocation(OUT hitLocation)) {		//side-effect: actually does the raytrace into hitLocation
-		controlledTank->aimAt(hitLocation);
+		aimingComp->aimAt(hitLocation);
 	}
 }
 
@@ -56,7 +43,7 @@ bool ATankPlayerController::getSightRayHitLocation(FVector& outHitLocation) cons
 				startLocation,
 				endLocation,
 				ECC_Visibility,
-				FCollisionQueryParams(NAME_None, false, controlledTank)
+				FCollisionQueryParams(NAME_None, false, GetPawn())
 			)
 		) {
 			///if linetrace hits anything: return the impact location and true

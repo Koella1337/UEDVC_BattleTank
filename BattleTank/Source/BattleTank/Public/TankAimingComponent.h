@@ -18,7 +18,7 @@ enum class EFiringStatus : uint8 {
 ///Forward Declarations
 class UTankBarrel;
 class UTankTurret;
-
+class AProjectile;
 
 
 
@@ -35,17 +35,36 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	// Aims the Tank's turret&barrel towards a specific world-location.
-	void aimAt(FVector worldLocation, float launchSpeed);
+	void aimAt(FVector worldLocation);
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void initialise(UTankTurret* turretToSet, UTankBarrel* barrel);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	// Launches a projectile
+	void fire();
 
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	EFiringStatus firingStatus = EFiringStatus::Aiming;
 
 private:
+	///Variables
 	UTankBarrel* barrel = nullptr;
 	UTankTurret* turret = nullptr;
+
+	//time since last projectile was launched. initialized to -reloadTime at Construct
+	float lastFireTime;
+
+	///Properties
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	TSubclassOf<AProjectile> projectileBlueprint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	float launchSpeed = 4000;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	float reloadTimeInSeconds = 3;
 	
+	///Private functions
 	void moveBarrelTowards(FVector aimDirection);
 };

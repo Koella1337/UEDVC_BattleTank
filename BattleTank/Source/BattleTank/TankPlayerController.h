@@ -10,7 +10,7 @@
 #include "TankPlayerController.generated.h"		//must be last include
 
 
-class ATank;	//forward declaration
+
 class UTankAimingComponent;
 
 
@@ -24,9 +24,6 @@ public:
 	///Functions
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	
-	UFUNCTION(BlueprintCallable, Category = "Tank")
-	ATank* getControlledTank() const;
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
@@ -53,5 +50,5 @@ private:
 	float lineTraceRange = 1000000.0f; ///10km
 
 	///Variables
-	ATank* controlledTank = nullptr;
+	UTankAimingComponent* aimingComp = nullptr;
 };

@@ -3,7 +3,9 @@
 #include "Public/TankAimingComponent.h"
 #include "Public/TankBarrel.h"
 #include "Public/TankTurret.h"
+#include "Public/Projectile.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
 #define OUT 
 
@@ -14,14 +16,16 @@ UTankAimingComponent::UTankAimingComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	lastFireTime = -reloadTimeInSeconds;		//make tanks able to fire immediately after spawning
 }
 
-void UTankAimingComponent::aimAt(FVector worldLocation, float launchSpeed) {
-	if (!barrel || !turret) {
-		UE_LOG(LogTemp, Error, TEXT("Missing Barrel or Turret on %s's AimingComponent!"), *GetOwner()->GetName());
-		return;
-	}
+void UTankAimingComponent::initialise(UTankTurret* turret, UTankBarrel* barrel) {
+	this->turret = turret;
+	this->barrel = barrel;
+}
+
+void UTankAimingComponent::aimAt(FVector worldLocation) {
+	if (!ensure(barrel && turret)) return;
 
 	//unitvector that tells us in which direction the projectile needs to be launched
 	FVector launchDirection;
@@ -47,11 +51,6 @@ void UTankAimingComponent::aimAt(FVector worldLocation, float launchSpeed) {
 	///if no solution found: do nothing
 }
 
-void UTankAimingComponent::initialise(UTankTurret* turret, UTankBarrel* barrel) {
-	this->turret = turret;
-	this->barrel = barrel;
-}
-
 //Expects barrel and turret to be valid since this is a private function.
 void UTankAimingComponent::moveBarrelTowards(FVector aimDirection) {
 	FRotator barrelRotator = barrel->GetComponentRotation();
@@ -60,4 +59,22 @@ void UTankAimingComponent::moveBarrelTowards(FVector aimDirection) {
 
 	turret->Rotate(deltaRotator.Yaw);
 	barrel->Elevate(deltaRotator.Pitch);
+}
+
+void UTankAimingComponent::fire() {
+	bool isReloaded = (GetWorld()->GetTimeSeconds() - lastFireTime) > reloadTimeInSeconds;
+
+	if (ensure(barrel && projectileBlueprint) && isReloaded) {
+		///spawn projectile at barrel's socket lockation
+		auto spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(
+			projectileBlueprint,
+			barrel->GetSocketLocation(FName("LaunchPoint")),
+			barrel->GetSocketRotation(FName("LaunchPoint"))
+			);
+
+		if (ensure(spawnedProjectile)) {
+			spawnedProjectile->launchProjectile(launchSpeed);
+			lastFireTime = GetWorld()->GetTimeSeconds();
+		}
+	}
 }
