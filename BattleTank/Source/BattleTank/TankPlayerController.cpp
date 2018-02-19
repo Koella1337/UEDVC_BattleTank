@@ -25,7 +25,7 @@ void ATankPlayerController::Tick(float DeltaSeconds) {
 void ATankPlayerController::aimTowardsCrosshair() {
 	if (!ensure(aimingComp)) return;
 
-	FVector hitLocation;
+	FVector hitLocation = FVector::ZeroVector;
 	if (getSightRayHitLocation(OUT hitLocation)) {		//side-effect: actually does the raytrace into hitLocation
 		aimingComp->aimAt(hitLocation);
 	}
@@ -55,7 +55,6 @@ bool ATankPlayerController::getSightRayHitLocation(FVector& outHitLocation) cons
 	}
 
 	///else: return zero-vector and false
-	outHitLocation = FVector::ZeroVector;
 	return false;
 }
 

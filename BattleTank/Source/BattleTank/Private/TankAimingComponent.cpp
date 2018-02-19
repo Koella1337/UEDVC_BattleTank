@@ -58,9 +58,7 @@ void UTankAimingComponent::aimAt(FVector worldLocation) {
 		launchDirection = launchDirection.GetSafeNormal();	//convert provided velocity vector into unit vector
 
 		isBarrelMoving = !launchDirection.Equals(barrel->GetForwardVector(), 0.015f);
-		if (isBarrelMoving) {
-			moveBarrelTowards(launchDirection);
-		}
+		moveBarrelTowards(launchDirection);
 	}
 	///if no solution found: do nothing
 }
@@ -69,10 +67,10 @@ void UTankAimingComponent::aimAt(FVector worldLocation) {
 void UTankAimingComponent::moveBarrelTowards(FVector aimDirection) {
 	FRotator barrelRotator = barrel->GetComponentRotation();
 	FRotator directionAsRotator = aimDirection.Rotation();
-	FRotator deltaRotator = directionAsRotator - barrelRotator;
+	FRotator deltaRotator = (directionAsRotator - barrelRotator).GetNormalized();
 
-	turret->Rotate(deltaRotator.Yaw);
 	barrel->Elevate(deltaRotator.Pitch);
+	turret->Rotate(deltaRotator.Yaw);
 }
 
 void UTankAimingComponent::fire() {
