@@ -34,12 +34,21 @@ void UTankAimingComponent::initialise(UTankTurret* turret, UTankBarrel* barrel) 
 	this->barrel = barrel;
 }
 
+EFiringStatus UTankAimingComponent::getFiringState() const {
+	return firingState;
+}
+
+int32 UTankAimingComponent::getAmmo() const {
+	return ammo;
+}
+
 void UTankAimingComponent::aimAt(FVector worldLocation) {
 	if (!ensure(barrel && turret)) return;
 
 	//unitvector that tells us in which direction the projectile needs to be launched
 	FVector launchDirection;
 
+	///try to calculate an arc for launching the projectile from the barrel's end to worldLocation
 	bool bFoundAimingSolution = UGameplayStatics::SuggestProjectileVelocity(
 		this,
 		OUT launchDirection,
@@ -52,7 +61,6 @@ void UTankAimingComponent::aimAt(FVector worldLocation) {
 		ESuggestProjVelocityTraceOption::DoNotTrace		//Parameter must be present to prevent bug
 	);
 
-	///try to calculate an arc for launching the projectile from the barrel's end to worldLocation
 	if (bFoundAimingSolution) {
 		///found an arc -> move the barrel
 		launchDirection = launchDirection.GetSafeNormal();	//convert provided velocity vector into unit vector
@@ -60,7 +68,10 @@ void UTankAimingComponent::aimAt(FVector worldLocation) {
 		isBarrelMoving = !launchDirection.Equals(barrel->GetForwardVector(), 0.015f);
 		moveBarrelTowards(launchDirection);
 	}
-	///if no solution found: do nothing
+	else {
+		///if no solution found: set barrel to moving to indicate that we're not locked on to any target
+		isBarrelMoving = true;
+	}
 }
 
 //Expects barrel and turret to be valid since this is a private function.
@@ -74,7 +85,7 @@ void UTankAimingComponent::moveBarrelTowards(FVector aimDirection) {
 }
 
 void UTankAimingComponent::fire() {
-	if (firingState != EFiringStatus::Reloading) {
+	if (firingState == EFiringStatus::Aiming || firingState == EFiringStatus::LockedOn) {
 		if (!ensure(barrel)) return;
 		if (!ensure(projectileBlueprint)) return;
 
@@ -83,17 +94,21 @@ void UTankAimingComponent::fire() {
 			projectileBlueprint,
 			barrel->GetSocketLocation(FName("LaunchPoint")),
 			barrel->GetSocketRotation(FName("LaunchPoint"))
-			);
+		);
 
 		if (ensure(spawnedProjectile)) {
 			spawnedProjectile->launchProjectile(launchSpeed);
 			lastFireTime = GetWorld()->GetTimeSeconds();
+			ammo--;
 		}
 	}
 }
 
 EFiringStatus UTankAimingComponent::determineFiringStatus() const {
-	if ((GetWorld()->GetTimeSeconds() - lastFireTime) < reloadTimeInSeconds) {
+	if (ammo <= 0) {
+		return EFiringStatus::OutOfAmmo;
+	}
+	else if ((GetWorld()->GetTimeSeconds() - lastFireTime) < reloadTimeInSeconds) {
 		return EFiringStatus::Reloading;
 	}
 	else {

@@ -12,14 +12,14 @@ UENUM()
 enum class EFiringStatus : uint8 {
 	Reloading,
 	Aiming,
-	LockedOn
+	LockedOn,
+	OutOfAmmo
 };
 
 ///Forward Declarations
 class UTankBarrel;
 class UTankTurret;
 class AProjectile;
-
 
 
 
@@ -38,17 +38,23 @@ public:
 	// Executed every frame
 	virtual void TickComponent(float, ELevelTick, FActorComponentTickFunction*) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	void initialise(UTankTurret* turret, UTankBarrel* barrel);
+
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	// Aims the Tank's turret&barrel towards a specific world-location.
 	void aimAt(FVector worldLocation);
-
-	UFUNCTION(BlueprintCallable, Category = "Setup")
-	void initialise(UTankTurret* turretToSet, UTankBarrel* barrel);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	// Launches a projectile
 	void fire();
 
+	UFUNCTION(BlueprintCallable, Category = "State")
+	int32 getAmmo() const;
+
+	EFiringStatus getFiringState() const;
+
+protected:
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	EFiringStatus firingState = EFiringStatus::Aiming;
 
@@ -69,6 +75,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	float reloadTimeInSeconds = 3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	int32 ammo = 5;
 	
 	///Private functions
 	void moveBarrelTowards(FVector aimDirection);

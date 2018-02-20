@@ -23,8 +23,10 @@ void ATankAIController::Tick(float deltaSeconds) {
 
 		///aim towards the player
 		aimingComp->aimAt(playerPawn->GetActorLocation());
-
-		///TODO: shoot if ready
-		aimingComp->fire();
+		
+		///shoot if ready
+		if (aimingComp->getFiringState() == EFiringStatus::LockedOn) {
+			aimingComp->fire();
+		}
 	}
 }

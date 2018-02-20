@@ -24,5 +24,5 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	// The radius in cm where the AI considers itself close enough to the player
-	float acceptanceRadius = 3000;
+	float acceptanceRadius = 6500;
 };
