@@ -26,6 +26,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	float projectileDamage = 50;
+
+	///Components
 	UProjectileMovementComponent* movementComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -40,6 +45,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	URadialForceComponent* explosionForce = nullptr;
 	
+	///Delegates
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* hitComponent, AActor* otherActor, UPrimitiveComponent* otherComponent, FVector normalImpulse, const FHitResult& hitResult);
 

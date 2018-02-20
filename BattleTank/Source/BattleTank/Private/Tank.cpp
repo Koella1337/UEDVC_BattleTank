@@ -12,4 +12,22 @@ ATank::ATank() {
 // Called when the game starts or when spawned
 void ATank::BeginPlay() {
 	Super::BeginPlay();
+
+	curHealth = maxHealth;
+}
+
+float ATank::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser) {
+	int32 damagePoints = FPlatformMath::RoundToInt(DamageAmount);
+	int32 damageToApply = FMath::Min<int32>(damagePoints, curHealth);
+
+	curHealth -= damageToApply;
+	if (curHealth <= 0) {
+		OnDeath.Broadcast();
+	}
+
+	return damageToApply;
+}
+
+float ATank::getHealthPercent() const {
+	return (float) curHealth / (float) maxHealth;
 }

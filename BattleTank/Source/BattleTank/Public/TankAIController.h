@@ -17,6 +17,7 @@ class BATTLETANK_API ATankAIController : public AAIController
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float deltaSeconds) override;
+	virtual void SetPawn(APawn* InPawn) override;
 
 private:
 	UTankAimingComponent* aimingComp = nullptr;
@@ -25,4 +26,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	// The radius in cm where the AI considers itself close enough to the player
 	float acceptanceRadius = 6500;
+
+	UFUNCTION()
+	void onTankDeath();
 };

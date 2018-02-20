@@ -24,6 +24,7 @@ public:
 	///Functions
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void SetPawn(APawn* InPawn) override;
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
@@ -32,6 +33,9 @@ protected:
 private:
 	///Functions
 	void aimTowardsCrosshair();
+
+	UFUNCTION()
+	void onTankDeath();
 
 	//raycast forward from the lookDirection to find a hit in sight
 	bool getSightRayHitLocation(FVector& outHitLocation) const;

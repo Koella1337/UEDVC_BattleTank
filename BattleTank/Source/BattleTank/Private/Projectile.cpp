@@ -5,6 +5,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/DamageType.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -13,27 +15,34 @@ AProjectile::AProjectile()
 	PrimaryActorTick.bCanEverTick = false;
 
 	collisionMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("CollisionMesh"));
-	ensure(collisionMesh);
-	this->SetRootComponent(collisionMesh);
-	collisionMesh->SetNotifyRigidBodyCollision(true);
-	collisionMesh->SetVisibility(false);
+	if (ensure(collisionMesh)) {
+		this->SetRootComponent(collisionMesh);
+		collisionMesh->SetNotifyRigidBodyCollision(true);
+		collisionMesh->SetVisibility(false);
+	}
+	else return;
+
 
 	movementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(FName("ProjectileMovement"));
-	ensure(movementComponent);
-	movementComponent->bAutoActivate = false;
+	if (ensure(movementComponent)) {
+		movementComponent->bAutoActivate = false;
+	}
 
 	launchBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("LaunchBlast"));
-	ensure(launchBlast);
-	launchBlast->SetupAttachment(RootComponent);
+	if (ensure(launchBlast)) {
+		launchBlast->SetupAttachment(RootComponent);
+	}
 
 	impactBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("ImpactBlast"));
-	ensure(impactBlast);
-	impactBlast->SetupAttachment(RootComponent);
-	impactBlast->bAutoActivate = false;
+	if (ensure(impactBlast)) {
+		impactBlast->SetupAttachment(RootComponent);
+		impactBlast->bAutoActivate = false;
+	}
 
 	explosionForce = CreateDefaultSubobject<URadialForceComponent>(FName("ExplosionForce"));
-	ensure(explosionForce);
-	explosionForce->SetupAttachment(RootComponent);
+	if (ensure(explosionForce)) {
+		explosionForce->SetupAttachment(RootComponent);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -50,7 +59,17 @@ void AProjectile::BeginPlay()
 void AProjectile::OnHit(UPrimitiveComponent* hitComponent, AActor* otherActor, UPrimitiveComponent* otherComponent, FVector normalImpulse, const FHitResult& hitResult) {
 	launchBlast->Deactivate();
 	impactBlast->Activate();
+
 	explosionForce->FireImpulse();
+	UGameplayStatics::ApplyRadialDamage(
+		this,
+		projectileDamage,
+		GetActorLocation(),
+		explosionForce->Radius,		//for consistency
+		UDamageType::StaticClass(),
+		TArray<AActor*>()			//damage all Actors
+	);
+
 	collisionMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
