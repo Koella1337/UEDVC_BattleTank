@@ -71,13 +71,13 @@ private:
 	TSubclassOf<AProjectile> projectileBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	float launchSpeed = 4000;
+	float launchSpeed = 8000;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	float reloadTimeInSeconds = 3;
+	float reloadTimeInSeconds = 2;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	int32 ammo = 5;
+	int32 ammo = 20;
 	
 	///Private functions
 	void moveBarrelTowards(FVector aimDirection);
