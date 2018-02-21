@@ -11,8 +11,8 @@ void ATankAIController::BeginPlay() {
 	aimingComp = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	ensure(aimingComp);
 
-	playerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	ensure(playerPawn);
+	player = GetWorld()->GetFirstPlayerController();
+	ensure(player);
 }
 
 void ATankAIController::SetPawn(APawn * InPawn) {
@@ -29,7 +29,10 @@ void ATankAIController::SetPawn(APawn * InPawn) {
 void ATankAIController::Tick(float deltaSeconds) {
 	Super::Tick(deltaSeconds);
 
-	if (ensure(aimingComp && playerPawn)) {
+	if (ensure(aimingComp && player)) {
+		auto playerPawn = player->GetPawn();
+		if (!playerPawn) return;			//do nothing if player doesn't possess a Pawn
+
 		///move towards the player
 		MoveToActor(playerPawn, acceptanceRadius);
 
@@ -44,5 +47,6 @@ void ATankAIController::Tick(float deltaSeconds) {
 }
 
 void ATankAIController::onTankDeath() {
-	UE_LOG(LogTemp, Warning, TEXT("Ai Tank died."));
+	if (!ensure(GetPawn())) return;
+	GetPawn()->DetachFromControllerPendingDestroy();
 }

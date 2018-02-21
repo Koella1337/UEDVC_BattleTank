@@ -34,5 +34,5 @@ private:
 	int32 maxHealth = 300;
 
 	UPROPERTY(VisibleAnywhere, Category = "Health")
-	int32 curHealth = maxHealth;
+	int32 curHealth;			// Initialised to maxHealth at BeginPlay
 };

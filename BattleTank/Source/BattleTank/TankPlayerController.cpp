@@ -35,7 +35,8 @@ void ATankPlayerController::Tick(float DeltaSeconds) {
 }
 
 void ATankPlayerController::onTankDeath() {
-	UE_LOG(LogTemp, Warning, TEXT("Player Tank died."));
+	StartSpectatingOnly();
+	UnPossess();
 }
 
 void ATankPlayerController::aimTowardsCrosshair() {
@@ -60,7 +61,7 @@ bool ATankPlayerController::getSightRayHitLocation(FVector& outHitLocation) cons
 				OUT linetraceHitResult,
 				startLocation,
 				endLocation,
-				ECC_Visibility,
+				ECC_Camera,
 				FCollisionQueryParams(NAME_None, false, GetPawn())
 			)
 		) {

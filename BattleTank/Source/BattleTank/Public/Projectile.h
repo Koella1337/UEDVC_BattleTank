@@ -30,6 +30,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 	float projectileDamage = 50;
 
+	//Unreal calculates the damage-radius to be larger than the force-radius. This factor compensates for that.
+	const float DAMAGE_RADIUS_COMPENSATION = 0.7f;
+
 	///Components
 	UProjectileMovementComponent* movementComponent = nullptr;
 

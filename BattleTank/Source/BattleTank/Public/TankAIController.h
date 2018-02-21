@@ -21,7 +21,7 @@ protected:
 
 private:
 	UTankAimingComponent* aimingComp = nullptr;
-	APawn* playerPawn = nullptr;
+	APlayerController* player = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	// The radius in cm where the AI considers itself close enough to the player

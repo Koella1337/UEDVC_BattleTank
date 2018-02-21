@@ -49,7 +49,7 @@ AProjectile::AProjectile()
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	///add event delegates
 	collisionMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 	impactBlast->OnSystemFinished.AddDynamic(this, &AProjectile::OnImpactParticlesFinished);
@@ -65,9 +65,9 @@ void AProjectile::OnHit(UPrimitiveComponent* hitComponent, AActor* otherActor, U
 		this,
 		projectileDamage,
 		GetActorLocation(),
-		explosionForce->Radius,		//for consistency
+		explosionForce->Radius * DAMAGE_RADIUS_COMPENSATION,
 		UDamageType::StaticClass(),
-		TArray<AActor*>()			//damage all Actors
+		TArray<AActor*>()					//damage all Actors
 	);
 
 	collisionMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
